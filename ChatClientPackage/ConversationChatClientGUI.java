@@ -1,39 +1,26 @@
 package ChatClientPackage;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 public class ConversationChatClientGUI extends JFrame {
+
 
 	private JPanel contentPane;
 	private JTextField messageToSend;
 	private JButton btnSend;
+	private JTextArea incomingMessages;
 
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ConversationChatClientGUI frame = new ConversationChatClientGUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	
 	public ConversationChatClientGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 500);
@@ -46,8 +33,9 @@ public class ConversationChatClientGUI extends JFrame {
 		scrollPane.setBounds(12, 13, 408, 381);
 		contentPane.add(scrollPane);
 		
-		JTextArea incomingMessages = new JTextArea();
+		incomingMessages = new JTextArea();
 		scrollPane.setViewportView(incomingMessages);
+		incomingMessages.setEditable(false);
 		
 		messageToSend = new JTextField();
 		messageToSend.setBounds(12, 407, 279, 35);
@@ -56,11 +44,33 @@ public class ConversationChatClientGUI extends JFrame {
 		
 		btnSend = new JButton("Wyœlij");
 		btnSend.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent event) {
-				
+				String message = messageToSend.getText();
+				try {
+					sendMessage(message);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
+
+			private void sendMessage(String message) throws IOException {
+				ConversationService.out.write(message);
+				ConversationService.out.newLine();
+				ConversationService.out.flush();
+					if(message.equals(ConversationService.endConectionMessage)){
+						ConversationService.isConnectionEndedByClient = true;
+					}
+			}
+			
 		});
 		btnSend.setBounds(303, 407, 102, 35);
 		contentPane.add(btnSend);
+		
 	}
+	
+	public JTextArea getIncomingMessagesTextArea(){
+		return incomingMessages;
+	}
+	
 }

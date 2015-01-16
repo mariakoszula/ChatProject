@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 
 public class ChatServer {
 	Integer maximumNumberOfClientsOnChat = 0;
-	Integer maximumNumberOfClientsInSocket = 3;
+	Integer maximumNumberOfClientsInSocket = 5;
 	Integer portNumber = 0;
 	boolean isServerRunning = false;
 	JFrame frame;
@@ -26,6 +26,7 @@ public class ChatServer {
 	JButton stopAndStartServerButton;
 	ServerSocket serverSocket = null;
 	RunningServer runServerTask  = null;
+	private Integer backlog = 100;
 
 	public static void main(String[] args) {
 				ChatServer chatServer = new ChatServer();
@@ -108,7 +109,7 @@ public class ChatServer {
 			maximumNumberOfClientsOnChat = Integer
 					.parseInt(maximumNumberOfClientsOnChatField.getText());
 			if(!isServerRunning){
-				serverSocket = new ServerSocket(portNumber);
+				serverSocket = new ServerSocket(portNumber, backlog);
 				runServerTask = new RunningServer(serverSocket, maximumNumberOfClientsOnChat, maximumNumberOfClientsInSocket);
 				Thread runServer = new Thread(runServerTask);
 				runServer.start();

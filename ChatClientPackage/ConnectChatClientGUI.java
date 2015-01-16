@@ -79,7 +79,7 @@ public class ConnectChatClientGUI extends JFrame {
 					showGivenValuesNotCorrectBox(nickName);
 				} else {
 					ConnectToServer connectToServerTask = new ConnectToServer(
-							serverIpAddress, portNumber);
+							serverIpAddress, portNumber, nickName);
 					Thread connectToServer = new Thread(connectToServerTask);
 					frame.dispose();
 					connectToServer.start();
@@ -90,7 +90,7 @@ public class ConnectChatClientGUI extends JFrame {
 				String message = "Podana warto\u015b\u0107: " + wrongValue
 						+ " jest niepoprawna. Spróbuj jeszcze raz.";
 				JOptionPane.showMessageDialog(null, message,
-						"Niepoprawna wartoœæ", JOptionPane.WARNING_MESSAGE);
+						"Niepoprawna wartosc", JOptionPane.WARNING_MESSAGE);
 			}
 
 			private boolean isPortCorrect() {
