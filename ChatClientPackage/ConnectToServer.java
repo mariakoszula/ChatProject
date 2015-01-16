@@ -1,3 +1,10 @@
+/**
+ * ConnectToServer class is responsible for creating connection to the server, send the nickName to the server and start the conversation thread.
+ * 
+ * @author Koszucka Maria
+ * @version 1.0
+ */
+
 package ChatClientPackage;
 
 import java.io.BufferedWriter;

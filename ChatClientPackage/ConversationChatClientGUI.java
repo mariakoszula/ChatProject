@@ -1,3 +1,10 @@
+/**
+ * ConversationChatClientGUI is responsible for creating GUI for Chat and for send messages to the Server.
+ * 
+ * @author Koszucka Maria
+ * @version 1.0
+ */
+
 package ChatClientPackage;
 
 import java.awt.event.ActionEvent;

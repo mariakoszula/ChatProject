@@ -1,3 +1,15 @@
+/**
+ * ConnectChatClientGUI is startup class for creating a client which connect to the Server and starts conversation with other connected clients.
+ * This class created the GUI
+ * 
+ * Usage: give proper IP and port of the Sever you want to connect to and the nickName, which will help to distinguish the clients. 
+ * 
+ * @TODO: inform the clients which were not accepted that they are in a waiting state or the connection for them failed
+ * 
+ * @author Koszucka Maria
+ * @version 1.0
+ */
+
 package ChatClientPackage;
 
 import java.awt.EventQueue;

@@ -1,3 +1,12 @@
+/**
+ * ConversationService is responsible for running GUI for chat - ConversationChatClientGUI and receiving messages from client.
+ * One special message is defined to disconnect the Client from the Server when the client closes the connection or when the Server closes its connection.
+ * 
+ * @author Koszucka Maria
+ * @version 1.0
+ */
+
+
 package ChatClientPackage;
 
 import java.awt.event.WindowEvent;

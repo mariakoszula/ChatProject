@@ -1,3 +1,12 @@
+/**
+ * ClientServing is responsible for receiving the messages and to send them to each connected client,
+ * it count the number of fully connected clients, which means they can send and receive messages.
+ * Keeps in queue the accepted by the socket clients and waits until the place in conversation will be opened for them. 
+ * It defines what to do if the Chat Server is closed. 
+ * 
+ * @author Koszucka Maria
+ * @version 1.0
+ */
 package ChatServerPackage;
 
 import java.io.BufferedReader;

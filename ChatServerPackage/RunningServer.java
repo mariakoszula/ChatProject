@@ -1,3 +1,10 @@
+/**
+ * RunningServer Class is responsible for accepting new clients until specified maximum number of clients is reached, and invokes method for 
+ * disconnecting the users after the Chat Server is stopped.
+ * 
+ * @author Koszucka Maria
+ * @version 1.0
+ */
 package ChatServerPackage;
 
 import java.io.IOException;

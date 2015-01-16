@@ -1,3 +1,23 @@
+/**
+ * ChatServer is startup class for Server application which listens on specified port and accepts Clients.
+ * This class is responsible for creating GUI, starting and stopping ChatServer.
+ * 
+ * Usage: 
+ * In startServerGUI the port number, maximum clients in socket and maximum client in conversation need to be provided by the user.
+ * After running the server the stopServerGUI is shown with one button which is used for stopping the ChatServer. It send to all connected clients
+ * special message to close the connection.
+ * 
+ * @TODOs: For the ChatServer what is not implemented yet: 
+ * 1) store clients nickNames to avoid the situation they are the same, 
+ * 2) inform chat Clients which were not accepted to the conversation or to the socket, that they have to wait or the connection for them failed 
+ * (so far is only possible to see from the server site in output)
+ * 3) figure out how the backlog value in SocketServer constructor works, it did not work as expected as first, for example if it is setup to value 2 it does not reject connection
+ * probably it is only maximum queue length, so it is used in the situation when the Server is overloaded, but have to confim it. 
+ * 
+ * @author Koszucka Maria
+ * @version 1.0
+ */
+
 package ChatServerPackage;
 
 import java.awt.BorderLayout;
@@ -15,19 +35,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class ChatServer {
-	Integer maximumNumberOfClientsOnChat = 0;
-	Integer maximumNumberOfClientsInSocket = 5;
-	Integer portNumber = 0;
+	private Integer maximumNumberOfClientsOnChat = 0;
+	private Integer maximumNumberOfClientsInSocket = 5;
+	private Integer portNumber = 0;
 	boolean isServerRunning = false;
-	JFrame frame;
-	JPanel panel;
-	JLabel firstLabel, secondLabel, thirdLabel, fourthLabel;
-	JTextField portNumberField, maximumNumberOfClientsOnChatField, maximumNumberOfClientsInSocketField;
-	Thread clientThread;
-	JButton stopAndStartServerButton;
-	ServerSocket serverSocket = null;
-	RunningServer runServerTask  = null;
-	private Integer backlog = 100;
+	private JFrame frame;
+	private JPanel panel;
+	private JLabel firstLabel, secondLabel, thirdLabel, fourthLabel;
+	private JTextField portNumberField, maximumNumberOfClientsOnChatField, maximumNumberOfClientsInSocketField;
+	private JButton stopAndStartServerButton;
+	private ServerSocket serverSocket = null;
+	private RunningServer runServerTask  = null;
+	private Integer backlog = 2;
 
 	public static void main(String[] args) {
 				ChatServer chatServer = new ChatServer();
@@ -45,7 +64,7 @@ public class ChatServer {
 				fourthLabel = new JLabel();
 		
 				stopAndStartServerButton = new JButton();
-				stopAndStartServerButton.addActionListener(new RunServer());
+				stopAndStartServerButton.addActionListener(new StopAndStartServer());
 				portNumberField = new JTextField(5);
 				maximumNumberOfClientsOnChatField = new JTextField(10);
 				maximumNumberOfClientsInSocketField = new JTextField(10);
@@ -59,6 +78,8 @@ public class ChatServer {
 				frame.setVisible(true);
 				
 	}
+	
+
 	public void startServerGUI(){
 		panel.removeAll();
 		panel.repaint();
@@ -93,7 +114,7 @@ public class ChatServer {
 				stopAndStartServerButton.setActionCommand("STOP");
 	}
 
-	private class RunServer implements ActionListener {
+	private class StopAndStartServer implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent event) {
@@ -123,8 +144,10 @@ public class ChatServer {
 			maximumNumberOfClientsInSocket = Integer.parseInt(maximumNumberOfClientsInSocketField.getText());
 			if(!isServerRunning && isCorrectPort() && isCorrectMaxNumberOfClient()){
 				serverSocket = new ServerSocket(portNumber, backlog);
+				
 				runServerTask = new RunningServer(serverSocket, maximumNumberOfClientsOnChat, maximumNumberOfClientsInSocket);
 				Thread runServer = new Thread(runServerTask);
+				
 				runServer.start();
 				isServerRunning = true;
 			}
