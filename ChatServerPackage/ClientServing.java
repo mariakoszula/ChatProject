@@ -1,3 +1,4 @@
+package ChatServerPackage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -15,16 +16,18 @@ public class ClientServing implements Runnable{
 	private static Integer connectedClients = 0; 
 	private static ArrayList<BufferedWriter> outAll = new ArrayList<BufferedWriter>(); 
 	private BufferedWriter out;
+	private static final String endConversationMessage = "BYE";
 	
 	public ClientServing(Socket socket, Integer maximumNumberOfClients){
 		this.socket = socket;
 		this.maximumNumberOfClients = maximumNumberOfClients;
-		System.out.println("New client joined.");
+		System.out.println("New client joined socket.");
 		
 	}
 	@Override
 	public void run() {
 			try {
+				connectClient();
 				out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 				outAll.add(out);
 				startChatting();
@@ -34,35 +37,48 @@ public class ClientServing implements Runnable{
 		}
 	
 	private void startChatting() throws IOException {
-		connectClient();
 		try(
+				
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		){
 			String inputLine;
+			readMessageFromClient:
 			while((inputLine = in.readLine()) != null){
 				if(clientsNickName == null){
 					clientsNickName = inputLine;
 					System.out.println(connectedClients+"th client joined conversetion. Name: "+clientsNickName);
 				}
 				if(clientsNickName != null){
+					if(inputLine.equalsIgnoreCase(endConversationMessage))
+						break readMessageFromClient;
 					System.out.println("Message from client "+clientsNickName+":"+inputLine);
-					sendToAll(inputLine);
+					sendToAll(clientsNickName+">"+inputLine);
 				}
 			}
-					
 		}
 		disconnectClient();
-		socket.close();
+		
 	}
 	private void disconnectClient() {
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		outAll.remove(out);
 		removeClient();
 		System.out.println(clientsNickName+" left conversetion. "+ connectedClients + "th connected.");
 	}
+	
 	private void connectClient() {
 		while(connectedClients >= maximumNumberOfClients){
-			System.out.println("Maximum numbers of users reached.");
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+		System.out.println("New client joined conversation.");
 			addClient();
 			
 	}
@@ -71,7 +87,7 @@ public class ClientServing implements Runnable{
 		Iterator<BufferedWriter> iterator = outAll.iterator();
 		while(iterator.hasNext()){
 			BufferedWriter tmpOut = iterator.next();
-			tmpOut.write(clientsNickName+">"+message);
+			tmpOut.write(message);
 			tmpOut.newLine();
 			tmpOut.flush();
 		}
@@ -84,5 +100,18 @@ public class ClientServing implements Runnable{
 	public void removeClient() {
 		connectedClients--;
 	}
-
+	
+	public Integer getconnectedClients(){
+		return connectedClients;
+	}
+	public void endConnectionByServer(){
+		try {
+			sendToAll(endConversationMessage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			disconnectClient();
+		}
+		
+	}
 }
