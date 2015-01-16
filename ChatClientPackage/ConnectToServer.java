@@ -11,8 +11,9 @@ import javax.swing.JOptionPane;
 public class ConnectToServer implements Runnable {
 	private String serverIpAddress;
 	private Integer portNumber;
-	private String nickName;
+	public static String nickName;
 	public static Socket socket;
+	public static BufferedWriter out = null;
 
 	public ConnectToServer(String serverIpAddress, Integer portNumber, String nickName) {
 		this.serverIpAddress = serverIpAddress;
@@ -24,7 +25,7 @@ public class ConnectToServer implements Runnable {
 	public void run() {
 		try {
 			socket = new Socket(serverIpAddress, portNumber);
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+			out = new BufferedWriter(new OutputStreamWriter(
 					socket.getOutputStream()));
 
 			out.write(nickName);
@@ -43,16 +44,7 @@ public class ConnectToServer implements Runnable {
 			JOptionPane.showMessageDialog(null, "Polaczenie sie nie powidlo.",
 					"Blad", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
-		} finally {
-			
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		} 
 
 	}
 }

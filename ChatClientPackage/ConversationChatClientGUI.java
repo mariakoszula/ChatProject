@@ -55,12 +55,10 @@ public class ConversationChatClientGUI extends JFrame {
 			}
 
 			private void sendMessage(String message) throws IOException {
-				ConversationService.out.write(message);
-				ConversationService.out.newLine();
-				ConversationService.out.flush();
-					if(message.equals(ConversationService.endConectionMessage)){
-						ConversationService.isConnectionEndedByClient = true;
-					}
+				ConnectToServer.out.write(message);
+				ConnectToServer.out.newLine();
+				ConnectToServer.out.flush();
+				messageToSend.setText("");
 			}
 			
 		});

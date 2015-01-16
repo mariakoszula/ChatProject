@@ -8,8 +8,10 @@ public class RunningServer implements Runnable {
 	private ServerSocket serverSocket;
 	private Integer maximumNumberOfClientsOnChat;
 	private Integer maximumNumberOfClientsInSocket;
+	private Integer clientsInSocket = 0 ;
 	private Thread clientThread;
 	private ClientServing servingTask = null;
+	private Socket clientSocket = null;
 
 	public RunningServer(ServerSocket serverSocket,
 			Integer maximumNumberOfClientsOnChat,
@@ -24,9 +26,10 @@ public class RunningServer implements Runnable {
 		try {
 			System.out.println("Server is running.");
 			while (true) {
-				if (servingTask == null
-						|| servingTask.getconnectedClients() < maximumNumberOfClientsInSocket) {
-					Socket clientSocket = serverSocket.accept();
+				if (clientsInSocket < maximumNumberOfClientsInSocket) {
+					clientSocket = serverSocket.accept();
+					clientsInSocket++;
+					
 					servingTask = new ClientServing(clientSocket,
 							maximumNumberOfClientsOnChat);
 					clientThread = new Thread(servingTask);
@@ -35,7 +38,18 @@ public class RunningServer implements Runnable {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}finally{
+			
+			if(clientSocket != null)
+				try {
+					clientSocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if(clientSocket == null){
+				servingTask.disconnectClient();
+			}
 	}
 
 	public void sendEndConversetionMessageToClients() {

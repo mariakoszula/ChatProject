@@ -16,7 +16,8 @@ public class ClientServing implements Runnable {
 	private static Integer connectedClients = 0;
 	private static ArrayList<BufferedWriter> outAll = new ArrayList<BufferedWriter>();
 	private BufferedWriter out;
-	private static final String endConversationMessage = "BYE";
+	private static final String endConversationMessage = "SpecialMessage@@BYE@@";
+	private static final Integer waitForConnectionTimeMS = 5000;
 
 	public ClientServing(Socket socket, Integer maximumNumberOfClients) {
 		this.socket = socket;
@@ -41,18 +42,17 @@ public class ClientServing implements Runnable {
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(
 				socket.getInputStream()));) {
 			String inputLine;
-			readMessageFromClient: while ((inputLine = in.readLine()) != null) {
+			getMessages: while ((inputLine = in.readLine()) != null) {
 				if (clientsNickName == null) {
 					clientsNickName = inputLine;
 					System.out.println(connectedClients
 							+ "th client joined conversetion. Name: "
 							+ clientsNickName);
 				}
-				if (clientsNickName != null) {
-					if (inputLine.equalsIgnoreCase(endConversationMessage))
-						break readMessageFromClient;
-					System.out.println("Message from client " + clientsNickName
-							+ ":" + inputLine);
+				else {
+					if(inputLine.equals(endConversationMessage)){
+						break getMessages;
+					}
 					sendToAll(clientsNickName + ">" + inputLine);
 				}
 			}
@@ -60,7 +60,7 @@ public class ClientServing implements Runnable {
 		disconnectClient();
 	}
 
-	private void disconnectClient() {
+	public void disconnectClient() {
 		try {
 			socket.close();
 		} catch (IOException e) {
@@ -74,8 +74,9 @@ public class ClientServing implements Runnable {
 
 	private void connectClient() {
 		while (connectedClients >= maximumNumberOfClients) {
+			System.out.println("Someone waits for place in conversation. Retring after "+waitForConnectionTimeMS + "ms");
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(waitForConnectionTimeMS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
